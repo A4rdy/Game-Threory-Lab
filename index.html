@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 GAME THEORY ARCADE</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* (Keep all existing styles – only updating the .credits section) */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: linear-gradient(145deg, #1a1e2f 0%, #2a2f4b 100%);
+            color: #fff;
+            font-family: 'Quicksand', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 2px, transparent 2px, transparent 4px);
+            pointer-events: none;
+            z-index: 999;
+        }
+        .arcade-machine {
+            max-width: 1000px;
+            width: 100%;
+            background: #232842;
+            border-radius: 60px 60px 30px 30px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 0 #0f1222, 0 30px 30px rgba(0,0,0,0.5);
+            border: 4px solid #ffcc66;
+            position: relative;
+        }
+        .arcade-machine::before {
+            content: "🎮 INSERT COIN 🎮";
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffcc66;
+            color: #1a1e2f;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            padding: 10px 20px;
+            border-radius: 40px;
+            box-shadow: 0 5px 0 #b38f40;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 24px;
+            text-align: center;
+            color: #ffcc66;
+            text-shadow: 4px 4px 0 #b38f40;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+        /* Improved credits line – now wraps nicely */
+        .credits {
+            text-align: center;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: #aab2d5;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 15px;
+            border-radius: 40px;
+            margin: 10px auto 20px auto;
+            width: 100%;
+            max-width: 100%;
+            line-height: 1.8;
+            border: 1px solid #ffaa33;
+            box-sizing: border-box;
+            word-break: break-word;
+            white-space: normal;
+        }
+        .credits span {
+            color: #ffcc66;
+            font-weight: bold;
+            display: inline-block;  /* keeps each name+number together */
+            white-space: nowrap;    /* prevents breaking inside a name */
+            margin: 2px 0;
+        }
+        /* Add a little spacing between spans */
+        .credits span:not(:last-child)::after {
+            content: ",";
+            color: #aab2d5;
+            font-weight: normal;
+            margin-right: 4px;
+        }
+        .subtitle {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #aab2d5;
+            font-size: 16px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 50px;
+        }
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+        .game-card {
+            background: #2f3555;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: inset 0 -8px 0 #1a1e2f, 0 10px 20px rgba(0,0,0,0.5);
+            border: 3px solid #ffaa33;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: inset 0 -8px 0 #1a1e2f, 0 18px 30px rgba(0,0,0,0.6);
+        }
+        .game-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: #1e2139;
+            padding: 15px;
+            border-radius: 20px;
+            border: 2px solid #ffaa33;
+        }
+        .game-icon {
+            font-size: 40px;
+            filter: drop-shadow(2px 4px 0 #b38f40);
+        }
+        .game-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            color: #ffcc66;
+        }
+        .game-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .description {
+            font-size: 14px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 15px;
+            border-left: 5px solid #ffaa33;
+        }
+        .payoff-matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5px;
+            background: #1e2139;
+            padding: 10px;
+            border-radius: 15px;
+            font-size: 13px;
+            text-align: center;
+        }
+        .matrix-header {
+            background: #ffaa33;
+            color: #1a1e2f;
+            font-weight: bold;
+            padding: 5px;
+            border-radius: 8px;
+        }
+        .matrix-cell {
+            background: #2f3555;
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid #ffaa33;
+        }
+        .control-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .game-btn {
+            background: #ffcc66;
+            border: none;
+            color: #1a1e2f;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            padding: 12px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #b38f40;
+            transition: 0.05s linear;
+            flex: 1 1 auto;
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .game-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #b38f40;
+        }
+        .game-btn.secondary {
+            background: #aab2d5;
+            box-shadow: 0 6px 0 #6b7396;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #1e2139;
+            padding: 10px;
+            border-radius: 50px;
+        }
+        .input-group label {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: #ffcc66;
+        }
+        .input-group input {
+            background: #2f3555;
+            border: 2px solid #ffaa33;
+            color: #fff;
+            font-size: 16px;
+            width: 70px;
+            padding: 8px;
+            text-align: center;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .result-box {
+            background: #1e2139;
+            border: 3px solid #ffaa33;
+            border-radius: 20px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 14px;
+            text-align: center;
+            min-height: 70px;
+            transition: all 0.3s;
+            box-shadow: inset 0 0 10px #ffaa3344;
+        }
+        .points-badge {
+            background: #ffcc66;
+            color: #1a1e2f;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            padding: 8px 15px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-top: 10px;
+            box-shadow: 0 4px 0 #b38f40;
+        }
+        .submit-area {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0 20px;
+        }
+        .submit-btn {
+            background: #66cc66;
+            border: none;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 18px;
+            padding: 20px 40px;
+            border-radius: 60px;
+            color: #1a1e2f;
+            box-shadow: 0 10px 0 #338833;
+            cursor: pointer;
+            transition: 0.05s linear;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .submit-btn:active {
+            transform: translateY(10px);
+            box-shadow: 0 0 0 #338833;
+        }
+        .score-panel {
+            text-align: center;
+            background: #1e2139;
+            padding: 15px;
+            border-radius: 50px;
+            border: 2px solid #ffcc66;
+            display: inline-block;
+            margin: 0 auto 20px;
+        }
+        .score-panel span {
+            font-family: 'Press Start 2P', cursive;
+            color: #ffcc66;
+            font-size: 18px;
+        }
+        footer {
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 12px;
+            text-align: center;
+        }
+        .name-section {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .name-container {
+            display: inline-block;
+            background: #1e2139;
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: 2px solid #ffcc66;
+        }
+        .name-container label {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            color: #ffcc66;
+            margin-right: 15px;
+        }
+        .name-container input {
+            background: #2f3555;
+            border: 2px solid #ffaa33;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 30px;
+            width: 250px;
+            font-size: 16px;
+        }
+        .name-container input::placeholder {
+            color: #aab2d5;
+            opacity: 0.7;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #232842;
+            border: 4px solid #ffcc66;
+            border-radius: 40px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 0 #0f1222;
+            font-family: 'Press Start 2P', cursive;
+            position: relative;
+        }
+        .modal-content h2 {
+            color: #ffcc66;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .modal-content p {
+            font-size: 12px;
+            line-height: 1.8;
+            margin: 10px 0;
+            color: #fff;
+        }
+        .modal-content .highlight {
+            color: #ffcc66;
+            font-weight: bold;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .modal-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #b38f40;
+            transition: 0.05s linear;
+        }
+        .modal-btn.submit {
+            background: #66cc66;
+            color: #1a1e2f;
+            box-shadow: 0 6px 0 #338833;
+        }
+        .modal-btn.cancel {
+            background: #aab2d5;
+            color: #1a1e2f;
+            box-shadow: 0 6px 0 #6b7396;
+        }
+        .modal-btn:active {
+            transform: translateY(6px);
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="arcade-machine">
+        <h1>🧠 THEORY ARCADE</h1>
+
+        <!-- Fixed credits line: now wraps nicely -->
+        <div class="credits">
+            Presented by 
+            <span>Yug Manral 2324295</span>
+            <span>Aradhya Tripathy 2324218</span>
+            <span>Saksham Mohanty 2324269</span>
+            <span>Ameya Jamwal 2324212</span>
+        </div>
+
+        <div class="subtitle">
+            <i class="fas fa-dice-d6"></i> Play three games of strategy. Earn research points! <i class="fas fa-dice-d6"></i>
+        </div>
+
+        <!-- Score Display -->
+        <div class="score-panel">
+            <span id="scoreDisplay">0</span> RESEARCH POINTS
+        </div>
+
+        <!-- Name Input -->
+        <div class="name-section">
+            <div class="name-container">
+                <label for="playerName"><i class="fas fa-user"></i> PLAYER NAME</label>
+                <input type="text" id="playerName" placeholder="Enter your name (optional)">
+            </div>
+        </div>
+
+        <!-- Games Grid (unchanged) -->
+        <div class="games-grid">
+            <!-- Prisoner's Dilemma Card -->
+            <div class="game-card">
+                <div class="game-header">
+                    <div class="game-icon">⚖️</div>
+                    <div class="game-title">PRISONER'S<br>DILEMMA</div>
+                </div>
+                <div class="game-content">
+                    <div class="description">You and an accomplice are caught. Do you stay silent or betray?</div>
+                    <div class="payoff-matrix">
+                        <div class="matrix-header"></div>
+                        <div class="matrix-header">🤝 Other C</div>
+                        <div class="matrix-header">💔 Other D</div>
+                        <div class="matrix-header">🤝 You C</div>
+                        <div class="matrix-cell">(3,3)</div>
+                        <div class="matrix-cell">(0,5)</div>
+                        <div class="matrix-header">💔 You D</div>
+                        <div class="matrix-cell">(5,0)</div>
+                        <div class="matrix-cell">(1,1)</div>
+                    </div>
+                    <div class="control-panel">
+                        <button class="game-btn" onclick="playPD('cooperate')"><i class="fas fa-handshake"></i> COOPERATE</button>
+                        <button class="game-btn secondary" onclick="playPD('defect')"><i class="fas fa-hand-fist"></i> DEFECT</button>
+                    </div>
+                    <div id="pdResult" class="result-box">
+                        🤔 Choose your strategy...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dictator Game Card -->
+            <div class="game-card">
+                <div class="game-header">
+                    <div class="game-icon">💰</div>
+                    <div class="game-title">DICTATOR<br>GAME</div>
+                </div>
+                <div class="game-content">
+                    <div class="description">You have 10 coins. How many do you share with a stranger?</div>
+                    <div class="input-group">
+                        <label for="dictatorAmount">GIVE</label>
+                        <input type="number" id="dictatorAmount" min="0" max="10" value="3">
+                        <span style="font-size:20px;">🪙</span>
+                    </div>
+                    <div class="control-panel">
+                        <button class="game-btn" onclick="playDictator()"><i class="fas fa-gift"></i> SPLIT</button>
+                    </div>
+                    <div id="dictatorResult" class="result-box">
+                        💭 How generous will you be?
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ultimatum Game Card -->
+            <div class="game-card">
+                <div class="game-header">
+                    <div class="game-icon">⚡</div>
+                    <div class="game-title">ULTIMATUM<br>GAME</div>
+                </div>
+                <div class="game-content">
+                    <div class="description">Proposer: split 10 coins. Responder: state minimum acceptable.</div>
+                    <div class="input-group">
+                        <label>OFFER</label>
+                        <input type="number" id="proposerOffer" min="0" max="10" value="4">
+                        <span>🪙</span>
+                    </div>
+                    <div class="input-group">
+                        <label>MIN ACCEPT</label>
+                        <input type="number" id="responderMin" min="0" max="10" value="2">
+                        <span>🪙</span>
+                    </div>
+                    <div class="control-panel">
+                        <button class="game-btn" onclick="playUltimatum()"><i class="fas fa-scale-balanced"></i> SUBMIT OFFER</button>
+                    </div>
+                    <div id="ultimatumResult" class="result-box">
+                        ⚖️ Set your terms...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="submit-area">
+            <button class="submit-btn" onclick="submitAllData()">
+                <i class="fas fa-floppy-disk"></i> SAVE TO LAB
+            </button>
+        </div>
+
+        <footer>
+            <i class="fas fa-code"></i> Data is anonymized (unless you provide your name). Play for science!
+        </footer>
+    </div>
+
+    <!-- Hidden Google Form (unchanged) -->
+    <form id="dataForm" method="POST" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSfKbzQwV2FMrWSiffwu8upLOwTHhqD0PrJdUPPhLRBLX3Vu3A/formResponse" style="display:none;">
+        <input type="hidden" name="entry.27915185" id="pdChoice">
+        <input type="hidden" name="entry.1178314253" id="dictatorGive">
+        <input type="hidden" name="entry.188160085" id="proposerOfferField">
+        <input type="hidden" name="entry.1181826609" id="responderMinField">
+        <input type="hidden" name="entry.948376305" id="playerNameField">
+    </form>
+
+    <!-- Modal for rewarding feedback -->
+    <div class="modal-overlay" id="rewardModal">
+        <div class="modal-content">
+            <h2>🏆 YOUR PLAYER PROFILE</h2>
+            <div id="modalText">
+                <!-- Will be filled by JavaScript -->
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn submit" onclick="confirmSubmit()">📤 SUBMIT DATA</button>
+                <button class="modal-btn cancel" onclick="closeModal()">↩️ PLAY AGAIN</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let pd = null;
+        let dictator = null;
+        let proposer = null;
+        let responder = null;
+        let totalPoints = 0;
+        const scoreDisplay = document.getElementById('scoreDisplay');
+
+        function updateScore(points) {
+            totalPoints += points;
+            scoreDisplay.textContent = totalPoints;
+        }
+
+        function playPD(choice) {
+            const other = Math.random() < 0.5 ? 'cooperate' : 'defect';
+            let yourPoints, otherPoints;
+            if (choice === 'cooperate' && other === 'cooperate') { yourPoints = 3; otherPoints = 3; }
+            else if (choice === 'cooperate' && other === 'defect') { yourPoints = 0; otherPoints = 5; }
+            else if (choice === 'defect' && other === 'cooperate') { yourPoints = 5; otherPoints = 0; }
+            else { yourPoints = 1; otherPoints = 1; }
+
+            pd = { choice, other, yourPoints, otherPoints };
+            const resultDiv = document.getElementById('pdResult');
+            resultDiv.innerHTML = `
+                <i class="fas fa-${choice === 'cooperate' ? 'handshake' : 'hand-fist'}"></i> 
+                You chose <strong>${choice}</strong>. Other chose <strong>${other}</strong>.<br>
+                <span style="color:#ffcc66;">You get ${yourPoints} 🪙 | Other gets ${otherPoints} 🪙</span>
+            `;
+            updateScore(yourPoints);
+        }
+
+        function playDictator() {
+            const give = parseInt(document.getElementById('dictatorAmount').value);
+            if (give < 0 || give > 10) { alert('Enter 0-10'); return; }
+            dictator = give;
+            const keep = 10 - give;
+            document.getElementById('dictatorResult').innerHTML = `
+                <i class="fas fa-gift"></i> You gave <strong>${give}</strong> 🪙, kept <strong>${keep}</strong> 🪙.
+            `;
+            updateScore(keep);
+        }
+
+        function playUltimatum() {
+            const offer = parseInt(document.getElementById('proposerOffer').value);
+            const minAccept = parseInt(document.getElementById('responderMin').value);
+            if (offer < 0 || offer > 10 || minAccept < 0 || minAccept > 10) {
+                alert('Enter numbers 0-10');
+                return;
+            }
+            proposer = offer;
+            responder = minAccept;
+            const accepted = offer >= minAccept;
+            const resultDiv = document.getElementById('ultimatumResult');
+            if (accepted) {
+                resultDiv.innerHTML = `
+                    <i class="fas fa-check-circle" style="color:#66cc66;"></i> 
+                    Offer <strong>${offer}</strong> ≥ minimum <strong>${minAccept}</strong>. Deal accepted!<br>
+                    You keep <strong>${10 - offer}</strong> 🪙, responder gets ${offer} 🪙.
+                `;
+                updateScore(10 - offer);
+            } else {
+                resultDiv.innerHTML = `
+                    <i class="fas fa-times-circle" style="color:#ff6666;"></i> 
+                    Offer <strong>${offer}</strong> < minimum <strong>${minAccept}</strong>. Deal rejected! You both get 0.
+                `;
+                // No points for rejection
+            }
+        }
+
+        // Generate a fun player profile based on choices
+        function generateProfile() {
+            let pdLabel = pd.choice === 'cooperate' ? '🤝 Cooperator' : '💔 Defector';
+            let dictatorLabel = '';
+            if (dictator >= 8) dictatorLabel = '🌟 Ultra Generous';
+            else if (dictator >= 5) dictatorLabel = '🎁 Generous';
+            else if (dictator >= 2) dictatorLabel = '⚖️ Fair';
+            else if (dictator === 1) dictatorLabel = '💰 Stingy';
+            else dictatorLabel = '🪙 Selfish';
+
+            let proposerLabel = '';
+            if (proposer >= 5) proposerLabel = '🤲 Fair Proposer';
+            else if (proposer >= 3) proposerLabel = '🤔 Moderate Proposer';
+            else proposerLabel = '👿 Greedy Proposer';
+
+            let responderLabel = '';
+            if (responder <= 2) responderLabel = '😌 Easygoing';
+            else if (responder <= 4) responderLabel = '😐 Typical';
+            else responderLabel = '👑 Demanding';
+
+            // Combine into an overall archetype (just for fun)
+            let archetype = '';
+            if (pd.choice === 'cooperate' && dictator >= 5 && proposer >= 4) archetype = '🌟 The Altruist';
+            else if (pd.choice === 'defect' && dictator <= 2 && proposer <= 2) archetype = '👿 The Competitor';
+            else if (pd.choice === 'cooperate' && dictator >= 5 && responder <= 2) archetype = '🕊️ The Trusting Soul';
+            else if (pd.choice === 'defect' && dictator >= 5 && proposer >= 4) archetype = '🎭 The Paradox';
+            else if (responder >= 5 && proposer <= 3) archetype = '⚖️ The Strategist';
+            else archetype = '🧐 The Everyplayer';
+
+            const name = document.getElementById('playerName').value.trim();
+            const nameDisplay = name ? name : 'Player';
+
+            return {
+                nameDisplay,
+                pdLabel,
+                dictatorLabel,
+                proposerLabel,
+                responderLabel,
+                archetype,
+                totalPoints
+            };
+        }
+
+        // Show modal with profile
+        function submitAllData() {
+            if (pd === null || dictator === null || proposer === null || responder === null) {
+                alert('⚡ Complete all three games first!');
+                return;
+            }
+
+            // Get name
+            const playerName = document.getElementById('playerName').value.trim();
+
+            // Set hidden fields (they will be submitted later)
+            document.getElementById('pdChoice').value = `${pd.choice} (other: ${pd.other})`;
+            document.getElementById('dictatorGive').value = dictator;
+            document.getElementById('proposerOfferField').value = proposer;
+            document.getElementById('responderMinField').value = responder;
+            document.getElementById('playerNameField').value = playerName;
+
+            // Generate profile
+            const profile = generateProfile();
+
+            // Build modal text
+            const modalText = document.getElementById('modalText');
+            modalText.innerHTML = `
+                <p><span class="highlight">${profile.nameDisplay}</span>, you scored <span class="highlight">${profile.totalPoints}</span> research points!</p>
+                <p>🔹 Prisoner's Dilemma: <span class="highlight">${profile.pdLabel}</span></p>
+                <p>🔹 Dictator Game: <span class="highlight">${profile.dictatorLabel}</span></p>
+                <p>🔹 Ultimatum (Proposer): <span class="highlight">${profile.proposerLabel}</span></p>
+                <p>🔹 Ultimatum (Responder): <span class="highlight">${profile.responderLabel}</span></p>
+                <p style="margin-top:20px;">✨ Overall Archetype: <span class="highlight">${profile.archetype}</span></p>
+            `;
+
+            // Show modal
+            document.getElementById('rewardModal').style.display = 'flex';
+        }
+
+        // Close modal without submitting
+        function closeModal() {
+            document.getElementById('rewardModal').style.display = 'none';
+        }
+
+        // Confirm submission: actually submit the form
+        function confirmSubmit() {
+            document.getElementById('dataForm').submit();
+            // No need to hide modal; page will redirect to Google's thank you page
+        }
+
+        // Optional: press Enter on inputs
+        document.getElementById('dictatorAmount').addEventListener('keypress', (e) => { if(e.key === 'Enter') playDictator(); });
+        document.getElementById('proposerOffer').addEventListener('keypress', (e) => { if(e.key === 'Enter') playUltimatum(); });
+        document.getElementById('responderMin').addEventListener('keypress', (e) => { if(e.key === 'Enter') playUltimatum(); });
+    </script>
+</body>
+</html>
