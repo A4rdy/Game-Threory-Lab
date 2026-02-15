@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* (Keep all existing styles – only updating the .credits section) */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -73,7 +72,7 @@
             margin-bottom: 10px;
             word-break: break-word;
         }
-        /* Improved credits line – now wraps nicely */
+        /* Credits line */
         .credits {
             text-align: center;
             font-family: 'Press Start 2P', cursive;
@@ -94,11 +93,10 @@
         .credits span {
             color: #ffcc66;
             font-weight: bold;
-            display: inline-block;  /* keeps each name+number together */
-            white-space: nowrap;    /* prevents breaking inside a name */
+            display: inline-block;
+            white-space: nowrap;
             margin: 2px 0;
         }
-        /* Add a little spacing between spans */
         .credits span:not(:last-child)::after {
             content: ",";
             color: #aab2d5;
@@ -107,12 +105,67 @@
         }
         .subtitle {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             color: #aab2d5;
             font-size: 16px;
             background: rgba(0,0,0,0.3);
             padding: 10px;
             border-radius: 50px;
+        }
+        /* New instructions panel */
+        .instructions-panel {
+            background: #1e2139;
+            border: 3px solid #ffaa33;
+            border-radius: 40px;
+            padding: 25px 20px;
+            margin: 20px 0 30px 0;
+            box-shadow: inset 0 -4px 0 #0f1222, 0 8px 0 #0f1222;
+        }
+        .instructions-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            color: #ffcc66;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .instructions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .instruction-card {
+            background: #2f3555;
+            border-radius: 30px;
+            padding: 20px;
+            border: 2px solid #ffaa33;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .instruction-card:hover {
+            transform: translateY(-5px);
+        }
+        .instruction-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            filter: drop-shadow(2px 4px 0 #b38f40);
+        }
+        .instruction-content h4 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            color: #ffcc66;
+            margin-bottom: 10px;
+        }
+        .instruction-content p {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #aab2d5;
+            margin-bottom: 8px;
+        }
+        .instruction-content p strong {
+            color: #ffcc66;
         }
         .games-grid {
             display: grid;
@@ -419,7 +472,7 @@
     <div class="arcade-machine">
         <h1>🧠 THEORY ARCADE</h1>
 
-        <!-- Fixed credits line: now wraps nicely -->
+        <!-- Credits line (should now be visible) -->
         <div class="credits">
             Presented by 
             <span>Yug Manral 2324295</span>
@@ -429,10 +482,41 @@
         </div>
 
         <div class="subtitle">
-            <i class="fas fa-dice-d6"></i> Play three games of strategy. Earn research points! <i class="fas fa-dice-d6"></i>
+            <i class="fas fa-dice-d6"></i> Learn, play, and contribute to science! <i class="fas fa-dice-d6"></i>
         </div>
 
-        <!-- Score Display -->
+        <!-- NEW: Game Theory 101 instructions panel -->
+        <div class="instructions-panel">
+            <div class="instructions-title">📚 GAME THEORY 101</div>
+            <div class="instructions-grid">
+                <div class="instruction-card">
+                    <div class="instruction-icon">⚖️</div>
+                    <div class="instruction-content">
+                        <h4>Prisoner's Dilemma</h4>
+                        <p><strong>How to play:</strong> Choose to cooperate or defect. Your payoff depends on the other player's random choice.</p>
+                        <p><strong>What it tests:</strong> Whether you prioritize individual gain or mutual benefit. Classic dilemma shows tension between self-interest and cooperation.</p>
+                    </div>
+                </div>
+                <div class="instruction-card">
+                    <div class="instruction-icon">💰</div>
+                    <div class="instruction-content">
+                        <h4>Dictator Game</h4>
+                        <p><strong>How to play:</strong> You have 10 coins. Decide how many to give to an anonymous recipient (you keep the rest).</p>
+                        <p><strong>What it tests:</strong> Pure altruism – how much you give when there's no consequence for giving nothing.</p>
+                    </div>
+                </div>
+                <div class="instruction-card">
+                    <div class="instruction-icon">⚡</div>
+                    <div class="instruction-content">
+                        <h4>Ultimatum Game</h4>
+                        <p><strong>How to play:</strong> As proposer, offer a split of 10 coins. As responder, state the minimum you'd accept. If offer ≥ min, deal accepted; otherwise both get 0.</p>
+                        <p><strong>What it tests:</strong> Fairness and strategic thinking – how unequal offers are rejected even at a cost.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Score Display (gamification) -->
         <div class="score-panel">
             <span id="scoreDisplay">0</span> RESEARCH POINTS
         </div>
